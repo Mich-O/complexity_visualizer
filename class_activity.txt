@@ -3,5 +3,5 @@ Create a venv
 Install the libs:
     - numpy - pip install numpy 
     - matplotlib - pip install matplotlib
-    - Tkinter - sudo apt install python3-kinter
+    - Tkinter - sudo apt-get install python-tk
 Run the code
