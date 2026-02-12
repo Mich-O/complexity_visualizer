@@ -8,7 +8,7 @@ def time_complexity_visualizer(algorithm, n_min, n_max, n_step):
     times = []
     input_sizes = list(range(n_min, n_max + n_step, n_step))
     
-    plt.ion()  # Enable interactive mode
+    plt.ion()  #Enable interactive mode
     fig, ax = plt.subplots()
     ax.set_xlabel('Input size')
     ax.set_ylabel('Running time (seconds)')
@@ -21,12 +21,12 @@ def time_complexity_visualizer(algorithm, n_min, n_max, n_step):
         end_time = time.time()
         times.append(end_time - start_time)
         
-        # Update plot with new data point
+        #Update plot with new data point
         line.set_data(input_sizes[:i+1], times)
         ax.relim()
         ax.autoscale_view()
         plt.draw()
-        plt.pause(0.01)  # Small pause to allow plot to refresh
+        plt.pause(0.01)  # pause for refresh
     
     plt.ioff()  # Disable interactive mode
     plt.show()  # Keep plot open
