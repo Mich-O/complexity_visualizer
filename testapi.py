@@ -9,10 +9,10 @@ import json
 BASE_URL = "http://localhost:3000"
 
 print("="*60)
-print("TESTING ANALYSIS API")
+print("TESTING analysis.py API RESPONSES")
 print("="*60)
 
-# ==================== TEST 1: ANALYZE ENDPOINT ====================
+# TEST 1: ANALYZE ENDPOINT 
 print("\n1. Testing /analyze endpoint...")
 print("-" * 60)
 
@@ -38,7 +38,7 @@ else:
     print(response.text)
     exit(1)
 
-# ==================== TEST 2: SAVE_ANALYSIS ENDPOINT ====================
+# TEST 2: SAVE_ANALYSIS ENDPOINT 
 print("\n2. Testing /save_analysis endpoint...")
 print("-" * 60)
 
@@ -58,7 +58,7 @@ else:
     print(response.text)
     exit(1)
 
-# ==================== TEST 3: RETRIEVE_ANALYSIS ENDPOINT ====================
+# TEST 3: RETRIEVE_ANALYSIS ENDPOINT 
 print("\n3. Testing /retrieve_analysis endpoint...")
 print("-" * 60)
 
@@ -77,29 +77,9 @@ else:
     print(f"✗ Error: {response.status_code}")
     print(response.text)
 
-# ==================== TEST 4: ALL ANALYSES ====================
-print("\n4. Testing /all_analyses endpoint...")
-print("-" * 60)
-
-response = requests.get(f"{BASE_URL}/all_analyses")
-
-if response.status_code == 200:
-    analyses = response.json()
-    print(f"✓ Total analyses in database: {len(analyses)}")
-    for i, analysis in enumerate(analyses[:3], 1):
-        print(f"\n  Analysis {i}:")
-        print(f"    ID: {analysis['id']}")
-        print(f"    Algorithm: {analysis['algorithm']}")
-        print(f"    Items: {analysis['items']}")
-else:
-    print(f"✗ Error: {response.status_code}")
-
-print("\n" + "="*60)
-print("TESTING COMPLETE")
-print("="*60)
 
 
-# ==================== CURL COMMAND EXAMPLES ====================
+# CURL COMMAND EXAMPLES 
 print("\n\nCURL COMMAND EXAMPLES:")
 print("="*60)
 
@@ -124,8 +104,6 @@ print('''curl -X POST http://localhost:3000/save_analysis \\
 print("\n# 3. Retrieve analysis by ID:")
 print('curl "http://localhost:3000/retrieve_analysis?id=1"')
 
-print("\n# 4. Get all analyses:")
-print('curl "http://localhost:3000/all_analyses"')
 
 print("\n# Test different algorithms:")
 print('curl "http://localhost:3000/analyze?algo=linear&n=5000&steps=100"')
