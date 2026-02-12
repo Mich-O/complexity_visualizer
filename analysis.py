@@ -3,20 +3,20 @@ from flask_sqlalchemy import SQLAlchemy
 import time
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Non-interactive backend for server
+matplotlib.use('Agg')  #Non-interactive backend for server
 import matplotlib.pyplot as plt
 import io
 import base64
 
 app = Flask(__name__)
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:12331Mysql@localhost:3306/airbnb'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///analysis.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:spatni@localhost:3306/airbnc'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///analysis.db' For initial testing.
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 my_db = SQLAlchemy(app)
 
-# ==================== DATABASE MODEL ====================
+#DATABASE MODEL
 class AnalysisResults(my_db.Model):
     __tablename__ = "analysis_results"
     id = my_db.Column(my_db.Integer, primary_key=True)
@@ -42,7 +42,7 @@ class AnalysisResults(my_db.Model):
             "graph_image_path": self.graph_image_path
         }
 
-# ==================== ALGORITHMS ====================
+#ALGORITHMS
 def linear_search(n):
     for i in range(n):
         if i == n-1:
@@ -77,7 +77,7 @@ def nested_loops(n):
             count += 1
     return count
 
-# ==================== ALGORITHM MAPPING ====================
+# ALGORITHM MAPPING
 ALGORITHMS = {
     'bubble': (bubble_sort, 'O(n²)'),
     'linear': (linear_search, 'O(n)'),
@@ -85,7 +85,7 @@ ALGORITHMS = {
     'nested': (nested_loops, 'O(n²)')
 }
 
-# ==================== TIME COMPLEXITY ANALYZER ====================
+# TIME COMPLEXITY ANALYZER
 def time_complexity_visualizer(algorithm, n_min, n_max, n_step):
     times = []
     input_sizes = list(range(n_min, n_max + n_step, n_step))
@@ -113,7 +113,7 @@ def time_complexity_visualizer(algorithm, n_min, n_max, n_step):
     
     return img_base64
 
-# ==================== ENDPOINTS ====================
+#ENDPOINTS
 
 @app.route('/analyze', methods=['GET'])
 def analyze():
@@ -121,12 +121,12 @@ def analyze():
     Endpoint: /analyze?algo=bubble&n=1000&steps=10
     """
     try:
-        # Get query parameters
+        #Get query parameters
         algo_name = request.args.get('algo', '').lower()
         n = int(request.args.get('n', 1000))
         steps = int(request.args.get('steps', 10))
         
-        # Validate algorithm
+        #Validate algorithm
         if algo_name not in ALGORITHMS:
             return jsonify({
                 "error": f"Invalid algorithm. Choose from: {list(ALGORITHMS.keys())}"
@@ -134,14 +134,14 @@ def analyze():
         
         algorithm, complexity = ALGORITHMS[algo_name]
         
-        # Run analysis
+        #Run analysis
         start_time = time.time()
         graph_base64 = time_complexity_visualizer(algorithm, steps, n, steps)
         end_time = time.time()
         
         total_time_ms = (end_time - start_time) * 1000
         
-        # Prepare response
+        #Prepare response
         response = {
             "algo": algo_name,
             "items": n,
@@ -170,7 +170,7 @@ def save_analysis():
     try:
         data = request.get_json()
         
-        # Validate required fields
+        #Validate required fields
         required_fields = ['algo', 'items', 'steps', 'start_time', 'end_time', 
                           'total_time_ms', 'time_complexity', 'graph_image_path']
         
@@ -178,7 +178,7 @@ def save_analysis():
             if field not in data:
                 return jsonify({"error": f"Missing required field: {field}"}), 400
         
-        # Create new analysis record
+        #Create new analysis record
         new_analysis = AnalysisResults(
             algorithm=data['algo'],
             items=data['items'],
@@ -190,7 +190,7 @@ def save_analysis():
             graph_image_path=data['graph_image_path']
         )
         
-        # Save to database
+        #Save to database
         my_db.session.add(new_analysis)
         my_db.session.commit()
         
@@ -216,7 +216,7 @@ def retrieve_analysis():
         if not analysis_id:
             return jsonify({"error": "Missing 'id' query parameter"}), 400
         
-        # Query database
+        #Query database
         analysis = AnalysisResults.query.get(int(analysis_id))
         
         if not analysis:
@@ -230,23 +230,11 @@ def retrieve_analysis():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/all_analyses', methods=['GET'])
-def all_analyses():
-    """
-    Bonus endpoint: Get all analyses
-    """
-    try:
-        analyses = AnalysisResults.query.all()
-        return jsonify([analysis.to_dict() for analysis in analyses]), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
-
-# ==================== MAIN ====================
 if __name__ == '__main__':
     with app.app_context():
         print("Creating database tables...")
         my_db.create_all()
-        print("✓ Database tables created!")
+        print(" Database tables created!")
     
     app.run(host="0.0.0.0", port=3000, debug=True)
